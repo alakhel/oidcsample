@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- in views/users.ejs -->
+<html>
+  <head>
+    <title>User Details</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <div class="content">
+      <br />
+
+      <p>Here are your idtoken details:</p>
+
+      <p>
+        <% Object.keys(user).forEach(function(item) { %>
+          <b><%- item %></b>: <%- user[item] %>
+          <br />
+        <% }); %>
+      </p>
+      <p>Here are your at details:</p>
+
+      <p>
+        <% Object.keys(at).forEach(function(item) { %>
+          <b><%- item %></b>: <%- at[item] %>
+          <br />
+        <% }); %>
+      </p>
+      <form action="/logout">
+        <input type="submit" value="Logout">
+      </form>
+    </div>
+  </body>
+</html>
