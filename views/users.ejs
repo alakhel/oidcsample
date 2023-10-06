@@ -1,42 +1,75 @@
 <!DOCTYPE html>
-<!-- in views/users.ejs -->
 <html>
   <head>
     <title>User Details</title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
   </head>
   <body>
     <div class="content">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">User</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (typeof user !== 'undefined') { %>
+          <% Object.keys(user).forEach(function(item) { %>
+            <tr>
+              <td><b><%- item %></b></td>
+              <td><%- user[item] %></td>
+            </tr>
+          <% }); %>
+          <% } %>
+        </tbody>
+      </table>
       <br />
-
-      <p>User:</p>
-
-      <p>
-        <% Object.keys(user).forEach(function(item) { %>
-          <b><%- item %></b>: <%- user[item] %>
-          <br />
-        <% }); %>
-      </p>
-      <p>Access Token:</p>
-
-      <p>
-        <% Object.keys(at).forEach(function(item) { %>
-          <b><%- item %></b>: <%- at[item] %>
-          <br />
-        <% }); %>
-      </p>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">Access Token</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (typeof at !== 'undefined') { %>
+          <% Object.keys(at).forEach(function(item) { %>
+            <tr>
+              <td><b><%- item %></b></td>
+              <td><%- at[item] %></td>
+            </tr>
+          <% }); %>
+          <% } %>
+        </tbody>
+      </table>
       <br />
-      <p>IDToken:</p>
-      <p>
-        <% Object.keys(id).forEach(function(item) { %>
-          <b><%- item %></b>: <%- id[item] %>
-          <br />
-        <% }); %>
-      </p>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">IDToken</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (typeof id !== 'undefined') { %>
+            <% Object.keys(id).forEach(function(item) { %>
+              <tr>
+                <td><b><%- item %></b></td>
+                <td><%- id[item] %></td>
+              </tr>
+            <% }); %>
+          <% } %>
+        </tbody>
+        
+      </table>
+      <br />
       <form action="/logout">
         <input type="submit" value="Logout">
       </form>
-
       <form action="/auth">
         <input type="submit" value="relogin">
       </form>

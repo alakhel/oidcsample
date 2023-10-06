@@ -46,7 +46,7 @@ app.use('/', indexRouter);
 
 app.get('/auth', (req, res) => {
   const authUrl = client.authorizationUrl({
-    scope: 'openid magasin',
+    scope: 'openid magasin mail',
     response_type: 'code'
   });
   res.redirect(authUrl);
@@ -55,7 +55,7 @@ app.get('/auth', (req, res) => {
 
 app.get('/auth/callback', async (req, res) => {
   const authorizationCode = req.query.code;
-  if (!authorizationCode) exit();
+  if (!authorizationCode) res.render('users');
   console.log(authorizationCode);
 
   const params = new URLSearchParams();
