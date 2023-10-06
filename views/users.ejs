@@ -9,7 +9,7 @@
     <div class="content">
       <br />
 
-      <p>Here are your idtoken details:</p>
+      <p>User:</p>
 
       <p>
         <% Object.keys(user).forEach(function(item) { %>
@@ -17,7 +17,7 @@
           <br />
         <% }); %>
       </p>
-      <p>Here are your at details:</p>
+      <p>Access Token:</p>
 
       <p>
         <% Object.keys(at).forEach(function(item) { %>
@@ -25,8 +25,20 @@
           <br />
         <% }); %>
       </p>
+      <br />
+      <p>IDToken:</p>
+      <p>
+        <% Object.keys(id).forEach(function(item) { %>
+          <b><%- item %></b>: <%- id[item] %>
+          <br />
+        <% }); %>
+      </p>
       <form action="/logout">
         <input type="submit" value="Logout">
+      </form>
+
+      <form action="/auth">
+        <input type="submit" value="relogin">
       </form>
     </div>
   </body>

@@ -31,12 +31,12 @@ app.use(expressSession({
 
 let client;
 
-Issuer.discover('https://rocky.synetis.corp:9031/.well-known/openid-configuration')
+Issuer.discover('https://pf2.synetis.corp:9031/.well-known/openid-configuration')
   .then(issuer => {
     client = new issuer.Client({
       client_id: 'expresso',
       client_secret: 'secret',
-      redirect_uris: ['http://rocky.synetis.corp:3000/auth/callback'],
+      redirect_uris: ['http://pf1.synetis.corp:3000/auth/callback'],
       post_logout_redirect_uris: ['http://localhost:3000/logout/callback'],
       token_endpoint_auth_method: 'client_secret_post'
     });
@@ -46,20 +46,22 @@ app.use('/', indexRouter);
 
 app.get('/auth', (req, res) => {
   const authUrl = client.authorizationUrl({
-    scope: 'openid',
+    scope: 'openid magasin',
     response_type: 'code'
   });
   res.redirect(authUrl);
 });
 
+
 app.get('/auth/callback', async (req, res) => {
   const authorizationCode = req.query.code;
-  if(!authorizationCode) exit()
-  console.log(authorizationCode)
+  if (!authorizationCode) exit();
+  console.log(authorizationCode);
+
   const params = new URLSearchParams();
   params.append('grant_type', 'authorization_code');
   params.append('code', authorizationCode);
-  params.append('redirect_uri', 'http://rocky.synetis.corp:3000/auth/callback');
+  params.append('redirect_uri', 'http://pf1.synetis.corp:3000/auth/callback');
 
   const config = {
     headers: {
@@ -72,7 +74,61 @@ app.get('/auth/callback', async (req, res) => {
   };
 
   try {
-    const response = await axios.post('https://rocky.synetis.corp:9031/as/token.oauth2', params, config);
+    const tokenResponse = await axios.post('https://pf2.synetis.corp:9031/as/token.oauth2', params, config);
+    const accessToken = tokenResponse.data.access_token;
+
+    const userInfoConfig = {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    };
+
+    const userInfoResponse = await axios.get('https://pf2.synetis.corp:9031/idp/userinfo.openid', userInfoConfig);
+    const userInfo = userInfoResponse.data;
+
+    req.session.tokenSet = {
+      id_token: tokenResponse.data.id_token,
+      access_token: accessToken
+    };
+
+    // Decode JWT and extract payload
+    const decodedIdToken = jwt.decode(tokenResponse.data.id_token);
+    const decodedAccessToken = jwt.decode(tokenResponse.data.access_token);
+
+    // Store payload content in req
+    req.idtoken = decodedIdToken;
+    req.at = decodedAccessToken;
+
+    res.render('users', { user: userInfo, at:  req.at , id: req.idtoken });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(400).send('Failed');
+  }
+});
+
+/**
+app.get('/auth/callback', async (req, res) => {
+  const authorizationCode = req.query.code;
+  if(!authorizationCode) exit()
+  console.log(authorizationCode)
+  const params = new URLSearchParams();
+  params.append('grant_type', 'authorization_code');
+  params.append('code', authorizationCode);
+  params.append('redirect_uri', 'http://pf1.synetis.corp:3000/auth/callback');
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    auth: {
+      username: 'expresso',
+      password: 'secret'
+    }
+  };
+
+  try {
+    const response = await axios.post('https://pf2.synetis.corp:9031/as/token.oauth2', params, config);
+    
     // Decode JWT and extract payload
     const decodedIdToken = jwt.decode(response.data.id_token);
     const decodedAccessToken = jwt.decode(response.data.access_token);
@@ -93,7 +149,7 @@ app.get('/auth/callback', async (req, res) => {
     res.status(400).send('Failed to get token');
   }
 });
-
+**/
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect(client.endSessionUrl());
