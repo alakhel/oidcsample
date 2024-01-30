@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('openid-connect-sample:server');
-var http = require('https');
+var http = require('http');
 var fs = require('fs');
 
 var sslOptions = {
@@ -14,7 +14,7 @@ var sslOptions = {
 	cert: fs.readFileSync('./myserver.crt')
 };
 
-console.log(fs.readFileSync('./myserver.key').toString())
+//console.log(fs.readFileSync('./myserver.key').toString())
 /**
  * Get port from environment and store in Express.
  */
@@ -26,13 +26,13 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(sslOptions, app);
+var server = http.createServer(/*sslOptions,*/ app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+app.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
