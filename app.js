@@ -31,13 +31,13 @@ app.use(expressSession({
 
 let client;
 
-Issuer.discover('https://pf2.synetis.corp:9031/.well-known/openid-configuration')
+Issuer.discover('https://thomascorpsynetis.b2clogin.com/thomascorpsynetis.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1_flux_authent')
   .then(issuer => {
     client = new issuer.Client({
-      client_id: 'expresso',
-      client_secret: 'secret',
-      redirect_uris: ['http://pf1.synetis.corp:3000/auth/callback'],
-      post_logout_redirect_uris: ['http://localhost:3000/logout/callback'],
+      client_id: 'cbfdc5a7-70c6-4d0a-9b29-4857ffa80278',
+      client_secret: 'uMy8Q~xxyBbNJHQVVWC.On1l4gS~I0jdIHHxgciG',
+      redirect_uris: ['https://pf1.synetis.corp:3000/auth/callback'],
+      post_logout_redirect_uris: ['https://localhost:3000/logout/callback'],
       token_endpoint_auth_method: 'client_secret_post'
     });
   });
@@ -46,7 +46,7 @@ app.use('/', indexRouter);
 
 app.get('/auth', (req, res) => {
   const authUrl = client.authorizationUrl({
-    scope: 'openid magasin mail',
+    scope: 'openid profile',
     response_type: 'code'
   });
   res.redirect(authUrl);
@@ -61,20 +61,20 @@ app.get('/auth/callback', async (req, res) => {
   const params = new URLSearchParams();
   params.append('grant_type', 'authorization_code');
   params.append('code', authorizationCode);
-  params.append('redirect_uri', 'http://pf1.synetis.corp:3000/auth/callback');
+  params.append('redirect_uri', 'https://pf1.synetis.corp:3000/auth/callback');
 
   const config = {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     auth: {
-      username: 'expresso',
-      password: 'secret'
+      username: 'cbfdc5a7-70c6-4d0a-9b29-4857ffa80278',
+      password: 'uMy8Q~xxyBbNJHQVVWC.On1l4gS~I0jdIHHxgciG'
     }
   };
 
   try {
-    const tokenResponse = await axios.post('https://pf2.synetis.corp:9031/as/token.oauth2', params, config);
+    const tokenResponse = await axios.post('https://thomascorpsynetis.b2clogin.com/thomascorpsynetis.onmicrosoft.com/oauth2/v2.0/token?p=b2c_1_flux_authent', params, config);
     const accessToken = tokenResponse.data.access_token;
 
     const userInfoConfig = {
@@ -82,9 +82,9 @@ app.get('/auth/callback', async (req, res) => {
         'Authorization': `Bearer ${accessToken}`
       }
     };
-
-    const userInfoResponse = await axios.get('https://pf2.synetis.corp:9031/idp/userinfo.openid', userInfoConfig);
-    const userInfo = userInfoResponse.data;
+/*
+    const userInfoResponse = await axios.get('https://graph.microsoft.com/oidc/userinfo', userInfoConfig);*/
+    const userInfo = {}//userInfoResponse.data;
 
     req.session.tokenSet = {
       id_token: tokenResponse.data.id_token,
