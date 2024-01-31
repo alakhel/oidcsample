@@ -36,8 +36,8 @@ Issuer.discover('https://thomascorpsynetis.b2clogin.com/thomascorpsynetis.onmicr
     client = new issuer.Client({
       client_id: 'cbfdc5a7-70c6-4d0a-9b29-4857ffa80278',
       client_secret: 'uMy8Q~xxyBbNJHQVVWC.On1l4gS~I0jdIHHxgciG',
-      redirect_uris: ['https://pf1.synetis.corp:3000/auth/callback'],
-      post_logout_redirect_uris: ['https://localhost:3000/logout/callback'],
+      redirect_uris: ['https://b2cazure-8fdc42f8a078.herokuapp.com/auth/callback'],
+      post_logout_redirect_uris: ['https://b2cazure-8fdc42f8a078.herokuapp.com/logout/callback'],
       token_endpoint_auth_method: 'client_secret_post'
     });
   });
@@ -61,7 +61,7 @@ app.get('/auth/callback', async (req, res) => {
   const params = new URLSearchParams();
   params.append('grant_type', 'authorization_code');
   params.append('code', authorizationCode);
-  params.append('redirect_uri', 'https://pf1.synetis.corp:3000/auth/callback');
+  params.append('redirect_uri', 'https://b2cazure-8fdc42f8a078.herokuapp.com');
 
   const config = {
     headers: {
